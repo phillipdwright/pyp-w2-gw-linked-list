@@ -144,7 +144,7 @@ class LinkedList(AbstractLinkedList):
             node_index += 1
         
         # Raise a KeyError if no item matches the index supplied
-        raise KeyError()
+        raise IndexError()
     
     def __add__(self, other):
         # Raise a TypeError if anything other than a LinkedList is added
@@ -162,7 +162,14 @@ class LinkedList(AbstractLinkedList):
         return LinkedList(new_list)
     
     def __iadd__(self, other):
-        for node in other:
+        # Raise a TypeError if anything other than a LinkedList is added
+        if not isinstance(other, LinkedList):
+            raise TypeError()
+        
+        # The nodes list prevents the LL from growing infinitely large if it
+        #  is added to itself
+        nodes = [node for node in other]
+        for node in nodes:
             self.append(node.elem)
         
         return self
@@ -186,8 +193,6 @@ class LinkedList(AbstractLinkedList):
         #  equal
         return True
     
-    #next = __next__
-    
     def append(self, elem):
         # Make a node of the element to be appended
         this = Node(elem)
@@ -205,7 +210,27 @@ class LinkedList(AbstractLinkedList):
         return len(self)
     
     def pop(self, index=None):
-        pass
+        # Set the index to the last element, if no index is passed
+        if index is None:
+            index = len(self) - 1
+        
+        # Get the node that matches the index
+        node = self[index]
+        
+        # If popping the first node, make the next node the start
+        if node is self.start:
+            self.start = node.next
+        
+        # If not popping the first node, point the previous node to the
+        #  following one
+        else:
+            self[index - 1].next = node.next
+        
+        # If the end was popped off and there are more nodes, reset the end
+        if self and node is self.end:
+            self.end = self[len(self) - 1]
+        
+        return node.elem
 
 
 # Generators
@@ -230,6 +255,14 @@ print('LL m is ', m)
 
 m += l
 print('LL m is ', m)
+
+l += l
+print('LL l is ', l)
+print('bool(l) is ', bool(l))
+
+n = LinkedList()
+print('LL n is ', n)
+print('bool(n) is ', bool(n))
 
 # print('len(l) is', len(l))
 # for i in range(len(l)):
