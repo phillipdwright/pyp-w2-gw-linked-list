@@ -94,7 +94,7 @@ class LinkedList(AbstractLinkedList):
     
     def __str__(self):
         # Make a list of the string representations of the nodes
-        node_strings = [str(node) for node in _get_node_from_list(self.start)]
+        node_strings = [str(node) for node in self]
         
         # Return list of elements separated by commas in a set of brackets
         return '[' + ', '.join(node_strings) + ']'
