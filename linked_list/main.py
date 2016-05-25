@@ -42,18 +42,53 @@ class Node(object):
     """
     Node class representing each of the linked nodes in the list.
     """
-
+    
     def __init__(self, elem, next=None):
-        pass
-
+        # Initialize Node attributes
+        self.elem = elem
+        self.next = next
+    
     def __str__(self):
-        pass
-
+        # Return the string representation of Node 
+        return str(self.elem)
+    
     def __eq__(self, other):
-        pass
-
+        # Return a truth value for "self == other"
+        # Not sure if we need the "if" statements.
+        if self.next is None and other.next is not None:
+            return False
+        if self.next is not None and other.next is None:
+            return False
+        return (self.elem == other.elem)
+    
     def __repr__(self):
-        pass
+        return "Node({}, {})".format(self.elem, self.next)
+
+# n = Node([])
+# repr(n) # will return the value returned in __repr__(n)
+# eval(repr(n)) == n
+
+# n = Node(1)
+# p = Node(1)
+
+# n == p
+# # n is self, p is other
+# # __eq__(n, p):
+#   n.elem == p.elem ??
+
+# l = LinkedList([1, 5, 10])
+
+# l.start = None
+# l.end = None
+# this = Node(1)
+# self.start = this # Node(1)
+# self.end = this # Node(1)
+# this = Node(5)
+# self.end.next = this # Node(1).next = Node(5)
+# self.end = this # Node(5)
+# this = Node(10)
+# self.end.next = this # Node(5).next = Node(10)
+# self.end = this # Node(10)
 
 
 class LinkedList(AbstractLinkedList):
@@ -62,16 +97,44 @@ class LinkedList(AbstractLinkedList):
     """
 
     def __init__(self, elements=None):
-        pass
+        # Initialize values for start, end, & created Nodes
+        self.start = None
+        self.end = None
+        self.elements = elements # Just needed for __iter__()
+        for elem in elements:
+            this = Node(elem)
+            if not self.start:
+                self.start = this
+            if self.end:
+                self.end.next = this
+            self.end = this
+        # Initialize the value to be tracked by the iterator
+        self.current = self.start
+            
 
     def __str__(self):
+        #node_strings = [str(node) for node in self.nodes]
+        #return "[" + ", ".join(node_strings) + "]"
         pass
 
     def __len__(self):
         pass
+        #return len(self.nodes)
 
     def __iter__(self):
-        pass
+        # behavior for restarting iteration at the beginning
+        return LinkedList(self.elements)
+    
+    def __next__(self):
+        # if self.current is None:
+        #     raise StopIteration()
+        # this, self.current = self.current, self.current.next
+        # return this
+        
+        # Implemented in Python 3:
+        # yield from get_elem_from_node(self.start)
+        for elem in get_elem_from_node(self.start):
+            return elem
 
     def __getitem__(self, index):
         pass
@@ -83,13 +146,32 @@ class LinkedList(AbstractLinkedList):
         pass
 
     def __eq__(self, other):
-        pass
+        if len(self) != len(other):
+            return False
+        for self_node, other_node in zip(self.nodes, other.nodes):
+            if self_node.elem != other_node.elem:
+                return False
+                
+    next = __next__
 
     def append(self, elem):
-        pass
+        this = Node(elem)
+        if self.end:
+            self.end.next = this
+        self.end = this
+        self.nodes.append(this)
+        # Set "next" for the previous element
 
     def count(self):
-        pass
+        return len(self)
+        
 
     def pop(self, index=None):
         pass
+
+# Generator
+def get_elem_from_node(start_node):
+    node = start_node
+    while node:
+        elem, node = node.elem, node.next
+        yield elem
