@@ -110,9 +110,6 @@ class LinkedList(AbstractLinkedList):
                     self.end.next = this
                 
                 self.end = this
-        
-        # For iteration
-        self.current = self.start
     
     def __str__(self):
         # Make a list of the string representations of the nodes
@@ -130,18 +127,9 @@ class LinkedList(AbstractLinkedList):
         return elem_count
     
     def __iter__(self):
-        return iter(_get_node_from_list(self.current))
-    
-    # def __next__(self):
-    #     # Implemented in Python 3:
-    #     # yield from get_elem_from_node(self.start)
-    #     # for node in _get_node_from_list(self.current):
-    #     #     return node
-    #     while self.current:
-    #         this, self.current = self.current, self.current.next
-    #         return this
-            
-    #     raise StopIteration()
+        return iter(_get_node_from_list(self.start))
+        # Implemented in Python 3:
+        # yield from _get_node_from_list(self.start)
     
     def __getitem__(self, index):
         # Raise a TypeError if the index is not an integer
@@ -159,20 +147,31 @@ class LinkedList(AbstractLinkedList):
         raise KeyError()
     
     def __add__(self, other):
-        new_list = LinkedList()
+        # Raise a TypeError if anything other than a LinkedList is added
+        if not isinstance(other, LinkedList):
+            raise TypeError()
+        
+        # Build a new list from scratch
+        new_list = []
         for node in self:
-            new_list.append(node)
-        
+            new_list.append(node.elem)
         for node in other:
-            new_list.append(node)
+            new_list.append(node.elem)
         
-        return new_list
+        # Return the LinkedList version of it
+        return LinkedList(new_list)
     
     def __iadd__(self, other):
         for node in other:
-            self.append(node)
+            self.append(node.elem)
+        
+        return self
     
     def __eq__(self, other):
+        # If other is not a LinkedList, they are not equal
+        if not isinstance(other, LinkedList):
+            return False
+        
         # If the lists have unequal length, they are not equal
         if len(self) != len(other):
             return False
@@ -196,6 +195,8 @@ class LinkedList(AbstractLinkedList):
         # Make this node "next" for the previously last node
         if self.end:
             self.end.next = this
+        else:
+            self.start = this
         
         # Make this the end element
         self.end = this
@@ -208,14 +209,47 @@ class LinkedList(AbstractLinkedList):
 
 
 # Generators
-def _get_elem_from_node(start_node):
-    node = start_node
-    while node:
-        elem, node = node.elem, node.next
-        yield elem
+# def _get_elem_from_node(start_node):
+#     node = start_node
+#     while node:
+#         elem, node = node.elem, node.next
+#         yield elem
 
 def _get_node_from_list(start_node):
     node = start_node
     while node:
         this, node = node, node.next
         yield this
+        
+
+l = LinkedList([1, 5])
+print('LL l is', l)
+
+m = l + l
+print('LL m is ', m)
+
+m += l
+print('LL m is ', m)
+
+# print('len(l) is', len(l))
+# for i in range(len(l)):
+#     print(l[i])
+    
+# l.append(2)
+# print('Appended 2.')
+# print('LL l is', l)
+# print('len(l) is', len(l))
+# for i in range(len(l)):
+#     print(l[i])
+    
+# l += l
+# print('LL l is', l)
+
+
+
+# l.append(2)
+# print('Appended 2.')
+# print(l)
+# for node in l:
+#     print('Node is:', node)
+#     print('Next is:', node.next)
